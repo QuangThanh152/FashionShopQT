@@ -32,7 +32,7 @@ export const fetchAllProducts = createAsyncThunk(
 
 export const editProduct = createAsyncThunk(
     '/products/editProduct',
-    async (id, formData) => {
+    async ({ id, formData }) => {
         const result = await axios.put(`http://localhost:5000/api/admin/products/edit-product/${id}`, formData, {
             headers: {
                 'Content-Type': 'application/json',
