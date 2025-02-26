@@ -29,25 +29,49 @@ export const fetchAllProducts = createAsyncThunk(
         return result?.data;
     }
 );
-const AdminProductsSlice = createSlice({
-    name: 'adminProducts',
-    initialState,
-    reducers: {
-        setProducts: (state, action) => {
-            state.products = action.payload;
-            state.isLoading = false;
-        },
-        setProduct: (state, action) => {
-            state.product = action.payload;
-            state.isLoading = false;
-        },
-        setError: (state, action) => {
-            state.error = action.payload;
-            state.isLoading = false;
+
+export const editProduct = createAsyncThunk(
+    '/products/editProduct',
+    async (id, formData) => {
+        const result = await axios.put(`http://localhost:5000/api/admin/products/edit-product/${id}`, formData, {
+            headers: {
+                'Content-Type': 'application/json',
+            }
         }
-    },
+        )
 
-    extraReducers: (builder) => {
-
+        return result?.data;
     }
-})
+);
+
+export const deleteProduct = createAsyncThunk(
+    '/products/deleteProduct',
+    async (id) => {
+        const result = await axios.delete(`http://localhost:5000/api/admin/products/delete-product/${id}`
+        )
+
+        return result?.data;
+    }
+);
+
+const AdminProductsSlice = createSlice({
+    name: "adminProducts",
+    initialState,
+    reducers: {},
+    extraReducers: (builder) => {
+      builder
+        .addCase(fetchAllProducts.pending, (state) => {
+          state.isLoading = true;
+        })
+        .addCase(fetchAllProducts.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.productList = action.payload.data;
+        })
+        .addCase(fetchAllProducts.rejected, (state, action) => {
+          state.isLoading = false;
+          state.productList = [];
+        });
+    },
+  });
+  
+  export default AdminProductsSlice.reducer;

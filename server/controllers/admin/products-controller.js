@@ -3,38 +3,33 @@ const Product = require("../../models/Product");
 
 const handleImageUpload = async (req, res) => {
     try {
-        const b64 = Buffer.from(req.file.buffer).toString('base64');
-        const url = "data: " + req.file.mimetype + ";base64," + b64;
-        const result = await imageUploadUtil(url);
+        if (!req.file || !req.file.buffer) {
+            return res.status(400).json({
+                success: false,
+                message: "Không thể up và tải file!"
+            });
+        }
+
+        const result = await imageUploadUtil(req.file.buffer);
 
         res.json({
             success: true,
-            message: "Image uploaded successfully",
+            message: "Upload ảnh thành công",
             result
-        })
+        });
     } catch (error) {
-        console.log(error);
-        return res.json({
+        console.error("Error in handleImageUpload:", error);
+        return res.status(500).json({
             success: false,
-            message: "Internal server error"
+            message: error.message || "Internal server error"
         });
     }
-}
+};
 
 // Theem 1 san pham moi
 const addNewProducts = async (req, res) => {
     try {
-        const { image,
-            title,
-            description,
-            category,
-            brand,
-            price,
-            salePrice,
-            totalStock
-        } = req.body;
-
-        const newlyCreatedProduct = new Product({
+        const {
             image,
             title,
             description,
@@ -42,48 +37,88 @@ const addNewProducts = async (req, res) => {
             brand,
             price,
             salePrice,
-            total
+            totalStock
+        } = req.body;
+
+        // Kiểm tra dữ liệu đầu vào
+        if (!title || !price || !totalStock || !category) {
+            return res.status(400).json({
+                success: false,
+                message: "Vui lòng nhập đủ (title, price, totalStock, category)"
+            });
+        }
+        if (isNaN(price) || isNaN(totalStock) || price < 0 || totalStock < 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Giá và tổng số lượng phải là số dương"
+            });
+        }
+
+        const newlyCreatedProduct = new Product({
+            image: image || '', // Đảm bảo image là chuỗi hoặc URL hợp lệ
+            title,
+            description: description || '',
+            category,
+            brand: brand || '',
+            price: parseFloat(price),
+            salePrice: salePrice ? parseFloat(salePrice) : 0,
+            totalStock: parseInt(totalStock)
         });
 
         await newlyCreatedProduct.save();
         res.status(201).json({
             success: true,
             data: newlyCreatedProduct,
-            message: "Product added successfully"
-        })
-
+            message: "Thêm sản phẩm mới thành công"
+        });
     } catch (error) {
-        console.log(error);
+        console.error("Error in addNewProducts:", error);
         res.status(500).json({
             success: false,
-            message: "Internal server error"
+            message: error.message || "Internal server error"
         });
     }
-}
+};
 
 // fecth tat ca san pham
 const fetchAllProducts = async (req, res) => {
     try {
-        const listOfProducts = await Product.find();
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const listOfProducts = await Product.find()
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 }); // Sắp xếp theo thời gian tạo, mới nhất trước
+
+        const totalProducts = await Product.countDocuments();
+
         res.status(200).json({
             success: true,
-            data: listOfProducts
+            data: listOfProducts,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(totalProducts / limit),
+                totalItems: totalProducts
+            }
         });
     } catch (error) {
-        console.log(error);
+        console.error("Error in fetchAllProducts:", error);
         res.status(500).json({
             success: false,
-            message: "Internal server error"
+            message: error.message || "Internal server error"
         });
     }
-}
+};
 
 // chinh sua san pham dua vao id
 const editProduct = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const { image,
+        const {
+            image,
             title,
             description,
             category,
@@ -93,61 +128,79 @@ const editProduct = async (req, res) => {
             totalStock
         } = req.body;
 
+        // Kiểm tra sản phẩm tồn tại
         const findProduct = await Product.findById(id);
-        if (!findProduct)
+        if (!findProduct) {
             return res.status(404).json({
                 success: false,
                 message: "Product not found"
             });
+        }
 
-        Product.title = title || findProduct.title;
-        Product.description = description || findProduct.description;
-        Product.category = category || findProduct.category;
-        Product.brand = brand || findProduct.brand;
-        Product.price = price || findProduct.price;
-        Product.salePrice = salePrice || findProduct.salePrice;
-        Product.totalStock = totalStock || findProduct.totalStock;
-        Product.image = image || findProduct.image;
+        // Cập nhật các trường nếu có
+        const updateData = {};
+        if (title) updateData.title = title;
+        if (description) updateData.description = description;
+        if (category) updateData.category = category;
+        if (brand) updateData.brand = brand;
+        if (price) updateData.price = parseFloat(price);
+        if (salePrice) updateData.salePrice = parseFloat(salePrice);
+        if (totalStock) updateData.totalStock = parseInt(totalStock);
+        if (image) updateData.image = image;
 
-        await findProduct.save();
+        // Sử dụng findByIdAndUpdate để cập nhật
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        );
+
         res.status(200).json({
             success: true,
-            data: findProduct,
-            message: "Product updated successfully"
-        })
-
+            data: updatedProduct,
+            message: "Đã cập nhật sản phẩm thành công"
+        });
     } catch (error) {
-        console.log(error);
+        console.error("Error in editProduct:", error);
         res.status(500).json({
             success: false,
-            message: "Internal server error"
+            message: error.message || "Internal server error"
         });
     }
-}
-
+};
 // xoa san pham dua vao id
 const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
+
+        // Kiểm tra quyền (giả sử sử dụng middleware auth)
+        // if (!req.user.isAdmin) {
+        //     return res.status(403).json({
+        //         success: false,
+        //         message: "Unauthorized access"
+        //     });
+        // }
+
         const product = await Product.findByIdAndDelete(id);
-        if (!product)
+        if (!product) {
             return res.status(404).json({
                 success: false,
                 message: "Product not found"
             });
+        }
 
         res.status(200).json({
             success: true,
-            message: "Product delete successfully",
+            message: "Xóa sản phẩm thành công"
         });
     } catch (error) {
-        console.log(error);
+        console.error("Error in deleteProduct:", error);
         res.status(500).json({
             success: false,
-            message: "Internal server error"
+            message: error.message || "Internal server error"
         });
     }
-}
+};
 module.exports = {
     handleImageUpload,
     addNewProducts,
