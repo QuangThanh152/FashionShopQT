@@ -81,33 +81,78 @@ const addNewProducts = async (req, res) => {
 };
 
 // fecth tat ca san pham
+// const fetchAllProducts = async (req, res) => {
+//     try {
+//         const page = parseInt(req.query.page) || 1;
+//         const limit = parseInt(req.query.limit);
+//         const skip = (page - 1) * limit;
+
+//         const listOfProducts = await Product.find()
+//             .skip(skip)
+//             .limit(limit)
+//             .sort({ createdAt: -1 }); // Sắp xếp theo thời gian tạo, mới nhất trước
+
+//         const totalProducts = await Product.countDocuments();
+
+//         res.status(200).json({
+//             success: true,
+//             data: listOfProducts,
+//             pagination: {
+//                 currentPage: page,
+//                 totalPages: Math.ceil(totalProducts / limit),
+//                 totalItems: totalProducts
+//             }
+//         });
+//     } catch (error) {
+//         console.error("Error in fetchAllProducts:", error);
+//         res.status(500).json({
+//             success: false,
+//             message: error.message || "Internal server error"
+//         });
+//     }
+// };
 const fetchAllProducts = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const skip = (page - 1) * limit;
+        const page = parseInt(req.query.page) || 1; // Mặc định page là 1 nếu không có
+        let limit = parseInt(req.query.limit); // Lấy limit từ query, không đặt mặc định 10 ngay
 
-        const listOfProducts = await Product.find()
-            .skip(skip)
-            .limit(limit)
-            .sort({ createdAt: -1 }); // Sắp xếp theo thời gian tạo, mới nhất trước
+        // Nếu limit là 0 hoặc không xác định, lấy toàn bộ dữ liệu
+        if (limit === 0 || isNaN(limit)) {
+            limit = undefined; // Bỏ giới hạn khi limit = 0
+        } else if (limit < 0) {
+            limit = 10; // Đặt mặc định 10 nếu limit âm
+        }
 
-        const totalProducts = await Product.countDocuments();
+        const skip = (page - 1) * (limit || 10); // Sử dụng limit nếu có, nếu không thì 10
+
+        const filters = {};
+
+        const totalProducts = await Product.countDocuments(filters);
+
+        const listOfProducts = limit
+            ? await Product.find(filters)
+                  .skip(skip)
+                  .limit(limit)
+                  .sort({ createdAt: -1 })
+            : await Product.find(filters).sort({ createdAt: -1 }); // Lấy tất cả nếu không có limit
+
+        console.log("Fetched products count:", listOfProducts.length); // Log để kiểm tra
+        console.log("Total products:", totalProducts);
 
         res.status(200).json({
             success: true,
             data: listOfProducts,
             pagination: {
                 currentPage: page,
-                totalPages: Math.ceil(totalProducts / limit),
-                totalItems: totalProducts
-            }
+                totalPages: limit ? Math.ceil(totalProducts / limit) : 1,
+                totalItems: totalProducts,
+            },
         });
     } catch (error) {
         console.error("Error in fetchAllProducts:", error);
         res.status(500).json({
             success: false,
-            message: error.message || "Internal server error"
+            message: error.message || "Internal server error",
         });
     }
 };

@@ -182,10 +182,10 @@ export const filterOptions = {
 };
 
 export const sortOptions = [
-    { id: "price-lowtohigh", label: "Price: Low to High" },
-    { id: "price-hightolow", label: "Price: High to Low" },
-    { id: "title-atoz", label: "Title: A to Z" },
-    { id: "title-ztoa", label: "Title: Z to A" },
+    { id: "price-lowtohigh", label: "Giá: Thấp đến Cao" },
+    { id: "price-hightolow", label: "Giá: Cao đến Thấp" },
+    { id: "title-atoz", label: "A đến Z" },
+    { id: "title-ztoa", label: "Z đến A" },
 ];
 
 export const addressFormControls = [
