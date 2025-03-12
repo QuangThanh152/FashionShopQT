@@ -16,31 +16,38 @@ const getFilteredProducts = async (req, res) => {
 
         let sort = {};
 
+        // xắp xếp theo giá tiền
         switch (sortBy) {
+            // Sắp xếp giá từ thấp đến cao
             case "price-lowtohigh":
-                sort.price = 1;
-
+                sort.salePrice = 1;
                 break;
+
+            // Sắp xếp giá từ cao đến thấp
             case "price-hightolow":
-                sort.price = -1;
-
+                sort.salePrice = -1;
                 break;
+
+            // A - Z
             case "title-atoz":
                 sort.title = 1;
-
                 break;
 
+            // Z - A
             case "title-ztoa":
                 sort.title = -1;
-
                 break;
 
             default:
+                // Mặc định sắp xếp giá từ thấp đến cao
                 sort.price = 1;
                 break;
         }
 
-        const products = await Product.find(filters).sort(sort);
+        // hàm xếp từ A - Z, Z - A
+        const products = await Product.find(filters)
+            .collation({ locale: "vi", strength: 2 })
+            .sort(sort);
 
         res.status(200).json({
             success: true,
@@ -63,7 +70,7 @@ const getProductDetails = async (req, res) => {
         if (!product)
             return res.status(404).json({
                 success: false,
-                message: "Product not found!",
+                message: "Không tìm thấy sản phẩm!",
             });
 
         res.status(200).json({

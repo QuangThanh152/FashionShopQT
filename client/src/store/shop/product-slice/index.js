@@ -26,17 +26,6 @@ export const fetchAllFilteredProducts = createAsyncThunk(
     }
 );
 
-// export const fetchAllFilteredProducts = createAsyncThunk(
-//     "/products/fetchAllProducts",
-//     async () => {
-//         console.log(fetchAllFilteredProducts, "fetchAllFilteredProducts");
-//         const result = await axios.get(
-//             "http://localhost:5000/api/shop/products/get?"
-//         );
-
-//         return result?.data;
-//     }
-// );
 export const fetchProductDetails = createAsyncThunk(
     "/products/fetchProductDetails",
     async (id) => {
