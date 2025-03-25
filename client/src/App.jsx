@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import AuthLayout from "./components/auth/layout";
-import AuthLogin from "./pages/auth/login";
-import AuthRegister from "./pages/auth/register";
+import AuthLogin from "./pages/auth/login.jsx";
+import AuthRegister from "./pages/auth/register.jsx";
 import AdminLayout from "./components/admin-view/layout";
 import AdminDashboard from "./pages/admin-view/dashboard";
 import AdminProducts from "./pages/admin-view/products";
@@ -22,17 +22,18 @@ import { checkAuth } from "./store/auth-slice";
 import Loading from "./components/ui/Loading";
 
 function App() {
-  const {user, isAuthenticated, isLoading} = useSelector(state => state.auth);
+  const { user, isAuthenticated, isLoading } = useSelector(
+    (state) => state.auth
+  );
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(checkAuth());
-  }, [dispatch])
+  }, [dispatch]);
 
-  if (isLoading) return <Loading />
+  if (isLoading) return <Loading />;
 
-  
   return (
-    <div className="flex flex-col overflow-hidden bg-white">
+    <div className="flex flex-col bg-white">
       {/* Router login, register */}
       <Routes>
         <Route
@@ -80,7 +81,6 @@ function App() {
         {/* Router not page */}
         <Route path="/unauth-page" element={<UnauthPage />} />
         <Route path="*" element={<NotFound />} />
-
       </Routes>
     </div>
   );

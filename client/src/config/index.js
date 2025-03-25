@@ -110,11 +110,6 @@ export const shoppingViewHeaderMenuItems = [
         path: "/shop/home",
     },
     {
-        id: "products",
-        label: "Products",
-        path: "/shop/listing",
-    },
-    {
         id: "men",
         label: "Men",
         path: "/shop/listing",
@@ -190,37 +185,37 @@ export const sortOptions = [
 
 export const addressFormControls = [
     {
-        label: "Address",
+        label: "Địa chỉ",
         name: "address",
         componentType: "input",
         type: "text",
-        placeholder: "Enter your address",
+        placeholder: "Nhập địa chỉ",
     },
     {
-        label: "City",
+        label: "Thành phố",
         name: "city",
         componentType: "input",
         type: "text",
-        placeholder: "Enter your city",
+        placeholder: "Nhập thành phố",
     },
     {
         label: "Pincode",
         name: "pincode",
         componentType: "input",
         type: "text",
-        placeholder: "Enter your pincode",
+        placeholder: "Nhập pincode",
     },
     {
-        label: "Phone",
+        label: "Số điện thoại",
         name: "phone",
         componentType: "input",
         type: "text",
-        placeholder: "Enter your phone number",
+        placeholder: "Nhâp số điện thoại",
     },
     {
-        label: "Notes",
+        label: "Ghi chú",
         name: "notes",
         componentType: "textarea",
-        placeholder: "Enter any additional notes",
+        placeholder: "Nhập ghi chú",
     },
 ];

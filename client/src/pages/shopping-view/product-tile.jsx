@@ -4,16 +4,16 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { brandOptionsMap, categoryOptionsMap } from "@/config"
 import { ShoppingCart } from "lucide-react"
 
-function ShoppingProductTile({ product, handleGetProductDetails }) {
+function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart }) {
   // Fallback image nếu URL không hợp lệ
   const handleImageError = (e) => {
     e.target.src = "/placeholder.svg" // Hình ảnh thay thế khi tải lỗi
   }
 
   return (
-    <Card className="relative flex flex-col w-full h-full max-w-sm overflow-hidden transition-all duration-300 bg-white border border-gray-200 shadow-sm group rounded-xl hover:-translate-y-1 hover:shadow-lg">
+    <Card className="relative flex flex-col w-full h-full max-w-sm p-2 overflow-hidden transition-all duration-300 bg-white border border-gray-200 shadow-sm group rounded-xl hover:-translate-y-1 hover:shadow-lg">
       {/* Hình ảnh sản phẩm với hiệu ứng zoom khi hover */}
-      <div className="relative h-[220px] w-full overflow-hidden" onClick={() => handleGetProductDetails(product?._id)}>
+      <div className="relative h-[220px] rounded-lg w-full overflow-hidden" onClick={() => handleGetProductDetails(product?._id)}>
         <div className="absolute inset-0 transition-opacity opacity-0 bg-gradient-to-t from-black/5 to-transparent group-hover:opacity-100" />
         <img
           src={product?.image || "/placeholder.svg"}
@@ -61,8 +61,10 @@ function ShoppingProductTile({ product, handleGetProductDetails }) {
 
       {/* Nút thêm vào giỏ hàng */}
       <CardFooter className="p-4 bg-gray-50">
-        <Button className="w-full rounded-lg bg-gray-900 py-2.5 text-sm font-medium text-white transition-all hover:bg-gray-800">
-          <ShoppingCart className="w-4 h-4 mr-2" />
+        <Button className="w-full rounded-lg bg-gray-900 py-2.5 text-sm font-medium text-white transition-all hover:bg-gray-800" onClick={() => {
+            handleAddtoCart(product?._id)
+          }}> 
+          <ShoppingCart className="w-4 h-4 mr-2"  />
           Thêm vào giỏ hàng
         </Button>
       </CardFooter>

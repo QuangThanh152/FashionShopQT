@@ -52,6 +52,7 @@ export default {
 				},
 			},
 			screens: {
+				xs: "480px",
 				sm: "640px",
 				md: "1024px", // Điều chỉnh md thành 1024px để Sheet hiển thị trên iPad Pro
 				lg: "1280px",

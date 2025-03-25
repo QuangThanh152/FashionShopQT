@@ -11,7 +11,7 @@ createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Provider store={store}>
       <App />
-      <ToastContainer />  {/* Đặt ở đây để dùng toàn bộ app */}
+      <ToastContainer limit={2} />  {/* Đặt ở đây để dùng toàn bộ app */}
     </Provider>
   </BrowserRouter>
 );

@@ -1,0 +1,31 @@
+/* auth-styles.css */
+.auth-input {
+  @apply w-full px-4 py-2 transition-all duration-300 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+}
+
+.auth-button {
+  @apply w-full px-4 py-2 text-white transition-all duration-300 bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+}
+
+.auth-icon-container {
+  @apply flex items-center justify-center w-12 h-12 transition-transform duration-300 bg-indigo-100 rounded-full hover:scale-110;
+}
+
+.auth-icon {
+  @apply w-6 h-6 text-indigo-600;
+}
+
+/* Animation for hover effects */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.hover-pulse:hover {
+  animation: pulse 1s infinite;
+}

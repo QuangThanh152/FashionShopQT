@@ -5,8 +5,16 @@ import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Input } from "../ui/input";
+import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2";
+import { setProductDetails } from "@/store/shop/product-slice";
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+
   const discount =
     productDetails?.salePrice > 0
       ? Math.round(
@@ -16,8 +24,50 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
       )
       : 0;
 
+  function handleAddtoCart(getCurrentProductId) {
+    dispatch(
+      addToCart({
+        userId: user?.id,
+        productId: getCurrentProductId,
+        quantity: 1,
+      })
+    ).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(fetchCartItems(user?.id));
+
+        // Hiển thị Toast thông báo ở góc dưới
+        // if (window.innerWidth >= 700 ) {
+        //   toast.success("Thêm vào giỏ hàng thành công", {
+        //     position: "bottom-right",
+        //     autoClose: 1000,
+        //     hideProgressBar: true,
+        //     closeOnClick: true,
+        //     pauseOnHover: false,
+        //   });
+        // }
+
+        // Nếu là mobile thì hiển thị Swal
+
+          Swal.fire({
+            title: "Thành công!",
+            text: "Sản phẩm đã được thêm vào giỏ hàng.",
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+            timer: 1000, // Tự động đóng sau 1.5 giây
+            showConfirmButton: false,
+          });
+
+      }
+    });
+  }
+
+  function handleDialogClose() {
+    setOpen(false)
+    dispatch(setProductDetails());
+  }
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="max-h-[90vh] max-w-[90vw] overflow-y-auto p-0 sm:max-w-[80vw] lg:max-w-[70vw]">
         {/* Nút đóng */}
         <DialogClose asChild>
@@ -29,19 +79,19 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
         <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
           {/* Phần hình ảnh */}
           <div className="relative h-full bg-gradient-to-br from-gray-50 to-gray-100">
-  <div className="relative h-full p-6 overflow-hidden">
-    <img
-      src={productDetails?.image || "/placeholder.svg"}
-      alt={productDetails?.title}
-      className="w-full h-full object-cover max-h-[80vh] transition-transform duration-300 ease-in-out hover:scale-105 rounded-lg"
-    />
-    {discount > 0 && (
-      <Badge className="absolute top-4 right-4 bg-rose-600 px-3 py-1.5 text-sm font-semibold text-white shadow-md">
-        -{discount}%
-      </Badge>
-    )}
-  </div>
-</div>
+            <div className="relative h-full p-6 overflow-hidden">
+              <img
+                src={productDetails?.image || "/placeholder.svg"}
+                alt={productDetails?.title}
+                className="w-full h-full object-cover max-h-[80vh] transition-transform duration-300 ease-in-out hover:scale-105 rounded-lg"
+              />
+              {discount > 0 && (
+                <Badge className="absolute top-4 right-4 bg-rose-600 px-3 py-1.5 text-sm font-semibold text-white shadow-md">
+                  -{discount}%
+                </Badge>
+              )}
+            </div>
+          </div>
           {/* Phần thông tin */}
           <div className="flex flex-col p-8 space-y-4 md:p-10 md:space-y-6">
             {/* Badges */}
@@ -93,7 +143,9 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                     </span>
                     <Badge className="ml-2 text-yellow-800 bg-yellow-100 hover:bg-yellow-100 hover:text-yellow-800">
                       Tiết kiệm $
-                      {(productDetails.price - productDetails.salePrice).toFixed(2)}
+                      {(
+                        productDetails.price - productDetails.salePrice
+                      ).toFixed(2)}
                     </Badge>
                   </>
                 ) : (
@@ -121,6 +173,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               <Button
                 size="lg"
                 className="w-full font-medium text-white transition-all duration-300 bg-gray-900 hover:bg-gray-700 hover:shadow-lg hover:scale-105"
+                onClick={() => handleAddtoCart(productDetails?._id)}
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
                 Thêm vào giỏ hàng
@@ -153,7 +206,6 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                     </p>
                   </div>
                 </div>
-
               </div>
             </div>
 
@@ -161,7 +213,6 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               <Input placeholder="Viết đánh giá..." />
               <Button>Đăng</Button>
             </div>
-
           </div>
         </div>
       </DialogContent>
