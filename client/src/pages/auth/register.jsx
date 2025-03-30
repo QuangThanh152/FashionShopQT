@@ -30,10 +30,22 @@ function AuthRegister() {
             console.log("📩 API Response in Component:", data)
 
             if (data?.payload?.success) {
-                toast.success(data?.payload?.message || "Đăng ký thành công!")
+                toast.success(data?.payload?.message || "Đăng ký thành công!", {
+                    position: "top-right",
+                    autoClose: 1000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false
+                })
                 navigate("/auth/login")
             } else {
-                toast.error(data?.payload?.message || "Có lỗi xảy ra!")
+                toast.error(data?.payload?.message || "Có lỗi xảy ra!", {
+                    position: "top-right",
+                    autoClose: 1000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false
+                })
             }
         })
     }

@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import UserCartItemsContent from "./cart-items-content";
+import { toast } from "react-toastify";
 
 function UserCartWrapper({ cartItems, setOpenCartSheet }) {
     const navigate = useNavigate();
@@ -19,6 +20,24 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
                 0
             )
             : 0;
+
+    // Kiểm tra giỏ hàng có sản phẩm không
+    const handleCheckout = () => {
+        if (cartItems.length === 0) {
+            toast.error("Chưa có sản phẩm để thanh toán!", {
+                position: "top-center",
+                autoClose: 1000,
+                closeOnClick: true,
+                hideProgressBar: true,
+                pauseOnHover: false,
+            });
+            return; // Chặn chuyển hướng nếu giỏ hàng trống
+        }
+
+        // Nếu có sản phẩm, chuyển đến trang thanh toán
+        navigate("/shop/checkout");
+        setOpenCartSheet(false);
+    };
     return (
         <SheetContent className="sm:max-w-md">
             <SheetHeader>
@@ -42,10 +61,7 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
             </div>
 
             <Button
-                onClick={() => {
-                    navigate("/shop/checkout");
-                    setOpenCartSheet(false);
-                }}
+                onClick={handleCheckout}
                 className="w-full mt-6"
             >
                 Thanh Toán

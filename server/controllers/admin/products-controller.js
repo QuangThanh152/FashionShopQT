@@ -6,7 +6,7 @@ const handleImageUpload = async (req, res) => {
         if (!req.file || !req.file.buffer) {
             return res.status(400).json({
                 success: false,
-                message: "Không thể up và tải file!"
+                message: "Không thể up và tải file!",
             });
         }
 
@@ -15,13 +15,13 @@ const handleImageUpload = async (req, res) => {
         res.json({
             success: true,
             message: "Upload ảnh thành công",
-            result
+            result,
         });
     } catch (error) {
         console.error("Error in handleImageUpload:", error);
         return res.status(500).json({
             success: false,
-            message: error.message || "Internal server error"
+            message: error.message || "Internal server error",
         });
     }
 };
@@ -37,45 +37,45 @@ const addNewProducts = async (req, res) => {
             brand,
             price,
             salePrice,
-            totalStock
+            totalStock,
         } = req.body;
 
         // Kiểm tra dữ liệu đầu vào
         if (!title || !price || !totalStock || !category) {
             return res.status(400).json({
                 success: false,
-                message: "Vui lòng nhập đủ (title, price, totalStock, category)"
+                message: "Vui lòng nhập đủ (title, price, totalStock, category)",
             });
         }
         if (isNaN(price) || isNaN(totalStock) || price < 0 || totalStock < 0) {
             return res.status(400).json({
                 success: false,
-                message: "Giá và tổng số lượng phải là số dương"
+                message: "Giá và tổng số lượng phải là số dương",
             });
         }
 
         const newlyCreatedProduct = new Product({
-            image: image || '', // Đảm bảo image là chuỗi hoặc URL hợp lệ
+            image: image || "", // Đảm bảo image là chuỗi hoặc URL hợp lệ
             title,
-            description: description || '',
+            description: description || "",
             category,
-            brand: brand || '',
+            brand: brand || "",
             price: parseFloat(price),
             salePrice: salePrice ? parseFloat(salePrice) : 0,
-            totalStock: parseInt(totalStock)
+            totalStock: parseInt(totalStock),
         });
 
         await newlyCreatedProduct.save();
         res.status(201).json({
             success: true,
             data: newlyCreatedProduct,
-            message: "Thêm sản phẩm mới thành công"
+            message: "Thêm sản phẩm mới thành công",
         });
     } catch (error) {
         console.error("Error in addNewProducts:", error);
         res.status(500).json({
             success: false,
-            message: error.message || "Internal server error"
+            message: error.message || "Internal server error",
         });
     }
 };
@@ -131,9 +131,9 @@ const fetchAllProducts = async (req, res) => {
 
         const listOfProducts = limit
             ? await Product.find(filters)
-                  .skip(skip)
-                  .limit(limit)
-                  .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .sort({ createdAt: -1 })
             : await Product.find(filters).sort({ createdAt: -1 }); // Lấy tất cả nếu không có limit
 
         console.log("Fetched products count:", listOfProducts.length); // Log để kiểm tra
@@ -170,7 +170,7 @@ const editProduct = async (req, res) => {
             brand,
             price,
             salePrice,
-            totalStock
+            totalStock,
         } = req.body;
 
         // Kiểm tra sản phẩm tồn tại
@@ -178,7 +178,7 @@ const editProduct = async (req, res) => {
         if (!findProduct) {
             return res.status(404).json({
                 success: false,
-                message: "Product not found"
+                message: "Product not found",
             });
         }
 
@@ -203,13 +203,13 @@ const editProduct = async (req, res) => {
         res.status(200).json({
             success: true,
             data: updatedProduct,
-            message: "Đã cập nhật sản phẩm thành công"
+            message: "Đã cập nhật sản phẩm thành công",
         });
     } catch (error) {
         console.error("Error in editProduct:", error);
         res.status(500).json({
             success: false,
-            message: error.message || "Internal server error"
+            message: error.message || "Internal server error",
         });
     }
 };
@@ -230,19 +230,19 @@ const deleteProduct = async (req, res) => {
         if (!product) {
             return res.status(404).json({
                 success: false,
-                message: "Product not found"
+                message: "Product not found",
             });
         }
 
         res.status(200).json({
             success: true,
-            message: "Xóa sản phẩm thành công"
+            message: "Xóa sản phẩm thành công",
         });
     } catch (error) {
         console.error("Error in deleteProduct:", error);
         res.status(500).json({
             success: false,
-            message: error.message || "Internal server error"
+            message: error.message || "Internal server error",
         });
     }
 };
@@ -251,5 +251,5 @@ module.exports = {
     addNewProducts,
     fetchAllProducts,
     editProduct,
-    deleteProduct
-}
+    deleteProduct,
+};

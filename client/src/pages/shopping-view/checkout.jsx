@@ -1,12 +1,22 @@
 import Address from "@/components/shopping-view/address";
 import img from "../../assets/account.jpg";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import UserCartItemsContent from "@/components/shopping-view/cart-items-content";
 import { Button } from "@/components/ui/button";
 import { ShoppingBagIcon } from "lucide-react";
+import { useState } from "react";
+import { createNewOrder } from "@/store/shop/order-slice";
+import { toast } from "react-toastify";
 
 function ShoppingCheckout() {
     const { cartItems } = useSelector((state) => state.shopCart);
+    const { user } = useSelector((state) => state.auth);
+    const { approvalURL } = useSelector((state) => state.shopOrder);
+    const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
+    const [isPaymentStartt, setIsPaymentStart] = useState(false);
+    const dispatch = useDispatch();
+
+    console.log("currentSelectedAddress", currentSelectedAddress);
 
     // Tính tổng giá tiền
     const totalCartAmount =
@@ -22,6 +32,91 @@ function ShoppingCheckout() {
             )
             : 0;
 
+    function handleInitiatePaypalPayment() {
+        // Kiểm tra xem giỏ hàng có sản phẩm hay không
+        if (!cartItems || !cartItems.items || cartItems.items.length === 0) {
+            toast.error("Chưa có sản phẩm để thanh toán!", {
+                position: "top-center",
+                autoClose: 1000,
+                closeOnClick: true,
+                hideProgressBar: true,
+                pauseOnHover: false,
+            });
+            return; // Dừng hàm nếu giỏ hàng rỗng
+        }
+        
+        // Kiểm tra địa chỉ giao hàng
+        if (currentSelectedAddress === null) {
+            toast.warning("Vui lòng chọn địa chỉ!", {
+                position: "top-center",
+                autoClose: 1000,
+                closeOnClick: true,
+                hideProgressBar: true,
+                pauseOnHover: false,
+            });
+            return;
+        }
+        // Kiểm tra dữ liệu cartItems
+        // if (!cartItems || !cartItems.items || !Array.isArray(cartItems.items)) {
+        //     console.error("Dữ liệu cartItems không hợp lệ hoặc không chứa items:", cartItems);
+        //     return;
+        //   }
+        //   // In dữ liệu cartItems trước khi xử lý
+        //   console.log("Dữ liệu cartItems trước khi gửi:", cartItems);
+
+        //   // Kiểm tra từng phần tử trong cartItems.items
+        //   cartItems.items.forEach((item, index) => {
+        //     console.log(`Phần tử ${index}:`, item);
+        //     if (!item.productId || !item.title || typeof item.salePrice !== "number" || !item.quantity) {
+        //       console.error(`Phần tử không hợp lệ tại ${index}:`, item);
+        //     }
+        //   });
+        const orderData = {
+            userId: user?.id,
+            cartId: cartItems?._id,
+            cartItems: cartItems.items.map((singleCartItem) => ({
+                productId: singleCartItem?.productId,
+                title: singleCartItem?.title,
+                image: singleCartItem?.image,
+                price:
+                    singleCartItem?.salePrice > 0
+                        ? singleCartItem?.salePrice
+                        : singleCartItem?.price,
+                quantity: singleCartItem?.quantity,
+            })),
+            addressInfo: {
+                addressId: currentSelectedAddress?._id,
+                address: currentSelectedAddress?.address,
+                city: currentSelectedAddress?.city,
+                pincode: currentSelectedAddress?.pincode,
+                phone: currentSelectedAddress?.phone,
+                notes: currentSelectedAddress?.notes,
+            },
+            orderStatus: "pending",
+            paymentMethod: "paypal",
+            paymentStatus: "pending",
+            totalAmount: totalCartAmount,
+            orderDate: new Date(),
+            orderUpdatedDate: new Date(),
+            paymenId: "",
+            payerId: "",
+        };
+
+        // console.log("Dữ liệu orderData:", orderData);
+
+        dispatch(createNewOrder(orderData)).then((data) => {
+            // console.log(data, "qthanh");
+            if (data?.payload?.success) {
+                setIsPaymentStart(true);
+            } else {
+                setIsPaymentStart(false);
+            }
+        });
+    }
+
+    if (approvalURL) {
+        window.location.href = approvalURL
+    }
     return (
         <div className="flex flex-col">
             {/* anh bia */}
@@ -36,7 +131,7 @@ function ShoppingCheckout() {
                 </div>
             </div>
             <div className="grid grid-cols-1 gap-3 p-5 mt-5 sm:grid-cols-2">
-                <Address />
+                <Address setCurrentSelectedAddress={setCurrentSelectedAddress} />
                 <div className="p-4 bg-white rounded-lg shadow-lg">
                     <h2 className="flex items-center mb-4 text-lg font-semibold">
                         <ShoppingBagIcon className="w-5 h-5 mr-2" />
@@ -62,7 +157,10 @@ function ShoppingCheckout() {
                             <span>$ {totalCartAmount.toFixed(2)}</span>
                         </div>
 
-                        <Button className="w-full mt-4">
+                        <Button
+                            onClick={handleInitiatePaypalPayment}
+                            className="w-full mt-4"
+                        >
                             Thanh Toán Đơn Hàng
                         </Button>
                     </div>

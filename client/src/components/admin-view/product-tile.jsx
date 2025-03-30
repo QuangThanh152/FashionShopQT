@@ -9,6 +9,7 @@ function AdminProductTile({
     setUploadedImageUrl,
     handleDelete,
 }) {
+
     // Tính phần trăm giảm giá nếu có salePrice
     const calculateDiscountPercentage = () => {
         if (product?.price && product?.salePrice && product.price > product.salePrice) {
@@ -27,11 +28,15 @@ function AdminProductTile({
                     alt={product?.title}
                     className="w-full h-[200px] object-cover rounded-t-xl transition-opacity duration-300 group-hover:opacity-90"
                 />
-                {product?.salePrice > 0 && (
+                {product?.totalStock <= 0 ? (
                     <div className="absolute px-3 py-1 text-xs text-white bg-red-600 rounded-full top-2 left-2 animate-pulse-slow">
-                        Sale
+                        Hết hàng
                     </div>
-                )}
+                ) : 
+                <div className="absolute px-3 py-1 text-xs text-white bg-red-600 rounded-full top-2 left-2 animate-pulse-slow">
+                {`${product?.totalStock} sản phẩm`}
+                    </div>
+                }
                 <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:opacity-100"></div>
             </div>
 
@@ -50,6 +55,10 @@ function AdminProductTile({
                     <p className="flex items-center gap-1 text-sm font-medium text-gray-700">
                         <span className="text-gray-500">Danh mục:</span>
                         <span className="text-primary">{product?.category || "Không có"}</span>
+                    </p>
+                    <p className="flex items-center gap-1 text-sm font-medium text-gray-700">
+                        <span className="text-gray-500">Số lượng còn lại trong kho:</span>
+                        <span className="text-primary">{product?.totalStock || "Không có"}</span>
                     </p>
                 </div>
                 <div className="flex items-center justify-between pt-1">

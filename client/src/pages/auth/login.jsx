@@ -24,9 +24,21 @@ function AuthLogin() {
 
     dispatch(loginUser(formData)).then((data) => {
       if (data?.payload?.success) {
-        toast.success(data?.payload?.message || "Đăng nhập thành công!")
+        toast.success(data?.payload?.message || "Đăng nhập thành công!", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false
+        })
       } else {
-        toast.error(data?.payload?.message || "Có lỗi xảy ra!")
+        toast.error(data?.payload?.message || "Có lỗi xảy ra!", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false
+        })
       }
     })
   }

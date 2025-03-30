@@ -2,7 +2,7 @@ import ProductImageUpload from "@/components/admin-view/image-upload";
 import AdminProductTile from "@/components/admin-view/product-tile";
 import CommonForm from "@/components/common/form";
 import { Button } from "@/components/ui/button";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 
 import {
     Sheet,
@@ -34,7 +34,8 @@ const initialFormData = {
 };
 
 function AdminProducts() {
-    const [openCreateProductsDialog, setOpenCreateProductsDialog] = useState(false); // State để kiểm soát việc mở/đóng dialog thêm/sửa sản phẩm, ban đầu là false (đóng)
+    const [openCreateProductsDialog, setOpenCreateProductsDialog] =
+        useState(false); // State để kiểm soát việc mở/đóng dialog thêm/sửa sản phẩm, ban đầu là false (đóng)
     const [formData, setFormData] = useState(initialFormData);
     const [imageFile, setImageFile] = useState(null);
     const [uploadedImageUrl, setUploadedImageUrl] = useState("");
@@ -62,7 +63,13 @@ function AdminProducts() {
                     setFormData(initialFormData);
                     setOpenCreateProductsDialog(false);
                     setCurrentEditedId(null);
-                    toast.success("Sửa sản phẩm thành công!");
+                    toast.success("Sửa sản phẩm thành công!", {
+                        position: "bottom-right",
+                        autoClose: 1000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                    });
                 }
             });
         } else {
@@ -77,7 +84,13 @@ function AdminProducts() {
                     setOpenCreateProductsDialog(false);
                     setImageFile(null);
                     setFormData(initialFormData);
-                    toast.success("Thêm sản phẩm thành công!");
+                    toast.success("Thêm sản phẩm thành công!", {
+                        position: "bottom-right",
+                        autoClose: 1000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                    });
                 }
             });
         }
@@ -118,7 +131,7 @@ function AdminProducts() {
     function isFormValid() {
         return Object.keys(formData)
             .map((key) => formData[key] !== "")
-            .every((item) =>item);
+            .every((item) => item);
     }
     useEffect(() => {
         dispatch(fetchAllProducts({ page: 1, limit: 0 }));
@@ -127,7 +140,7 @@ function AdminProducts() {
     // Phân trang
     const totalItems = productList.length; // Tổng số sản phẩm trong danh sách productList
 
-    const totalPages = Math.ceil(totalItems / itemsPerPage); 
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage; // Chỉ số bắt đầu của danh sách sản phẩm trên trang hiện tại (ví dụ: trang 1 => startIndex = 0)
     const endIndex = startIndex + itemsPerPage;
     const paginatedProducts = productList.slice(startIndex, endIndex); // Lấy danh sách sản phẩm cho trang hiện tại bằng cách cắt productList từ startIndex đến endIndex
@@ -146,8 +159,8 @@ function AdminProducts() {
 
             {/* Hiển thị sản phẩm qua phân trang */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {productList && productList.length > 0
-                    ? paginatedProducts.map((productItem) => (
+                {productList && productList.length > 0 ? (
+                    paginatedProducts.map((productItem) => (
                         <AdminProductTile
                             product={productItem}
                             key={productItem._id}
@@ -158,7 +171,11 @@ function AdminProducts() {
                             handleDelete={handleDelete}
                         />
                     ))
-                    : <div className="text-center text-gray-500">Không có sản phẩm nào.</div>}
+                ) : (
+                    <div className="text-center text-gray-500">
+                        Không có sản phẩm nào.
+                    </div>
+                )}
             </div>
 
             {/* Phân trang */}
@@ -179,19 +196,19 @@ function AdminProducts() {
                             key={i + 1}
                             // Chuyển đến trang tương ứng khi click
                             onClick={() => setCurrentPage(i + 1)}
-                            className={`px-4 py-2 rounded-lg ${
-                                currentPage === i + 1
+                            className={`px-4 py-2 rounded-lg ${currentPage === i + 1
                                     ? "bg-blue-600 text-white hover:bg-blue-700"
                                     : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                            } transition-colors`}
+                                } transition-colors`}
                         >
                             {i + 1}
                         </Button>
                     ))}
                     <Button
                         // Chuyển đến trang tiếp theo, không lớn hơn tổng số trang
-                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-
+                        onClick={() =>
+                            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                        }
                         // vô hiệu hóa nếu đang ở trang cuối cùng
                         disabled={currentPage === totalPages}
                         className="px-4 py-2 text-gray-700 transition-colors bg-gray-200 rounded-lg hover:bg-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
@@ -209,7 +226,10 @@ function AdminProducts() {
                     setFormData(initialFormData);
                 }}
             >
-                <SheetContent side="right" className="w-[400px] overflow-auto bg-white shadow-2xl rounded-l-lg">
+                <SheetContent
+                    side="right"
+                    className="w-[400px] overflow-auto bg-white shadow-2xl rounded-l-lg"
+                >
                     <SheetHeader>
                         <SheetTitle className="pb-4 text-2xl font-semibold text-gray-800 border-b">
                             {currentEditedId !== null ? "Sửa Sản Phẩm" : "Thêm Sản Phẩm"}

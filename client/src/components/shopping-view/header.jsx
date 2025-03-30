@@ -5,7 +5,7 @@ import {
     SquareMenu,
     UserRoundCog,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "../ui/button";
 import {
     Sheet,
@@ -152,19 +152,24 @@ function HeaderRightContent({ closeSheet, isMobile }) {
 
 // Component header chính của ứng dụng
 function ShoppingHeader() {
-    const { user } = useSelector((state) => state.auth);
-    const dispatch = useDispatch();
+    // const { user } = useSelector((state) => state.auth);
+    // const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     // Định nghĩa hàm handleNavigateToListingPage trong ShoppingHeader
     function handleNavigateToListingPage(getCurrentMenuItem) {
         sessionStorage.removeItem('filters');
         const currentFilter =
-            getCurrentMenuItem.id !== 'home'
+            getCurrentMenuItem.id !== 'home' && getCurrentMenuItem.id !== 'products'
                 ? { category: [getCurrentMenuItem.id] }
                 : null;
         sessionStorage.setItem('filters', JSON.stringify(currentFilter));
-        navigate(getCurrentMenuItem.path);
+
+        location.pathname.includes('listing') && currentFilter !== null
+        ? setSearchParams(new URLSearchParams(`?category=${getCurrentMenuItem.id}`)) 
+        : navigate(getCurrentMenuItem.path);
     }
 
     return (

@@ -106,39 +106,44 @@ export const addProductFormElements = [
 export const shoppingViewHeaderMenuItems = [
     {
         id: "home",
-        label: "Home",
+        label: "Trang Chủ",
         path: "/shop/home",
     },
     {
+        id: "products",
+        label: "Sản Phẩm",
+        path: "/shop/listing",
+    },
+    {
         id: "men",
-        label: "Men",
+        label: "Nam",
         path: "/shop/listing",
     },
     {
         id: "women",
-        label: "Women",
+        label: "Nữ",
         path: "/shop/listing",
     },
     {
         id: "kids",
-        label: "Kids",
+        label: "Trẻ Em",
         path: "/shop/listing",
     },
     {
         id: "footwear",
-        label: "Footwear",
+        label: "Giày Dép",
         path: "/shop/listing",
     },
     {
         id: "accessories",
-        label: "Accessories",
+        label: "Phụ Kiện",
         path: "/shop/listing",
     },
-    {
-        id: "search",
-        label: "Search",
-        path: "/shop/search",
-    },
+    // {
+    //     id: "search",
+    //     label: "🔍", // Biểu tượng tìm kiếm đơn giản
+    //     path: "/shop/search",
+    // },
 ];
 
 export const categoryOptionsMap = {
